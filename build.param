@@ -1,0 +1,63 @@
+##
+ # Copyright (C) 2021 Alibaba Group Holding Limited
+ # Author: LuChongzhi <chongzhi.lcz@alibaba-inc.com>
+ #
+ # This program is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License version 2 as
+ # published by the Free Software Foundation.
+##
+
+BUILD_LOG_START="\n\033[47;30m>>> $(MODULE_NAME) $@ begin  >>>\033[0m"
+BUILD_LOG_END  ="\033[47;30m<<< $(MODULE_NAME) $@ end    <<<\033[0m"
+
+PLATFORM ?= simulator
+
+ROOT_DIR=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+SO_LIB_DIR=lib_so
+
+ifeq ($(PLATFORM),simulator)
+  CFLAGS := -O0 -g -Werror -fPIC -DPLATFORM_SIMULATOR
+else
+  CFLAGS := -O2 -g -Werror -fPIC
+endif
+LFLAGS := -no-pie
+
+LIBS := -L$(ROOT_DIR)/output/common \
+           -L$(ROOT_DIR)/output/hal
+
+ifeq ($(PLATFORM),light)
+INCLUDE := -I$(ROOT_DIR)/include/common \
+           -I$(ROOT_DIR)/include/hal \
+           -I$(ROOT_DIR)/include/lib_camera \
+           -I$(ROOT_DIR)/src/lib_camera/camera_action/include\
+           -I$(ROOT_DIR)/examples/camera/camera_demo3_srcs \
+           -I$(ROOT_DIR)/src/lib_camera \
+           -I$(ROOT_DIR)/../recipe-sysroot/usr/include/csi_hal/
+
+else
+INCLUDE := -I$(ROOT_DIR)/include/common \
+           -I$(ROOT_DIR)/include/hal \
+           -I$(ROOT_DIR)/include/lib_camera \
+           -I$(ROOT_DIR)/src/lib_camera/camera_action/include
+endif
+
+ifeq ($(PLATFORM),simulator)
+  CC  := gcc
+  CXX := g++
+  CPP := g++
+  AR  := ar
+  LD  := ld
+  RAN := ranlib
+  LIBOPENCV_INC = $(shell pkg-config --cflags opencv)
+  LIBOPENCV_LIBS = $(shell pkg-config --libs opencv)
+else ifeq ($(PLATFORM),light)
+#  PARAM_FILE  = ../.param
+#  -include $(PARAM_FILE)
+test = $(shell if [ -f "../.param" ]; then echo "exist"; else echo "noexist"; fi)
+ifeq ("$(test)", "exist")
+  -include ../.param
+endif
+else
+  $(error PLATFORM undefined)
+endif
+
