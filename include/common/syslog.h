@@ -1,10 +1,5 @@
 /*
- * Copyright (C) 2021 Alibaba Group Holding Limited
- * Author: LuChongzhi <chongzhi.lcz@alibaba-inc.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * Copyright (C) 2021-2022 Alibaba Group Holding Limited
  */
 
 #include <stdio.h>
